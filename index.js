@@ -3,11 +3,23 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT;
 
-require('./conn-config/conn');
+app.use(express.json());
+require('./connection/connectDB');
+
+const userRoutes = require('./routes/user.routes');
+const cartRoutes = require('./routes/cart.routes');
+const counterRoutes = require('./routes/counter.routes');
+const dishRoutes = require('./routes/dish.routes');
 
 app.get('/' , (req , res) => {
     res.send("Hello ");
 });
+
+app.use('/users',userRoutes);
+app.use('/cart',cartRoutes);
+app.use('/counter',counterRoutes);
+app.use('/dishes',dishRoutes);
+
 
 
 app.listen(PORT , () => {
