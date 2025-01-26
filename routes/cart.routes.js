@@ -10,9 +10,9 @@ router.get('/',cartController.getCartItems);
 
 router.post('/',cartController.addDish);
 
-router.patch('/:id',cartController.updateDish);
+router.patch('/:id',cartController.updateDishInCart);
 
-router.delete('/:id',cartController.deleteDish);
+router.delete('/:id',cartController.deleteDishFromCart);
 
 router.delete('/',cartController.clearCart);
 

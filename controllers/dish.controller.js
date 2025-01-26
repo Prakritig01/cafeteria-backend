@@ -1,30 +1,90 @@
 const Dishes = require('../models/dish.model');
+const { clearCart } = require('./cart.controller');
 
-const getDishes = async(req,res) => {
-    const dishes  = await Dishes.find().populate('counter');
-    res.json({"dishes": dishes});
+// Get all dishes
+const getDishes = async (req, res) => {
+    try {
+        const dishes = await Dishes.find().populate('counter');
+        res.json({ "dishes": dishes });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error fetching dishes', error: err.message });
+    }
 };
 
-const addNewDish = async (req,res) => {
-    const dish = new Dishes(req.body);
-    await dish.save();
-    res.json({"message": "Dish added successfully", "dish": dish});
-}
+// Add a new dish
+const addNewDish = async (req, res) => {
+    try {
+        const dish = new Dishes(req.body);
+        await dish.save();
+        res.json({ "message": "Dish added successfully", "dish": dish });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error adding dish', error: err.message });
+    }
+};
 
-const getDishById = async (req,res) => {
-    const dish = await Dishes.findById(req.params.id).populate('counter');
-    res.json({"dish": dish});
-}
+// Get a dish by ID
+const getDishById = async (req, res) => {
+    try {
+        const dish = await Dishes.findById(req.params.id).populate('counter');
+        if (!dish) {
+            return res.status(404).json({ message: 'Dish not found' });
+        }
+        res.json({ "dish": dish });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error fetching dish', error: err.message });
+    }
+};
 
-const updateDish = async (req,res) => {
-    const dish = await Dishes.findByIdAndUpdate(req.params.id, req.body, {new: true}).populate('counter');      
-    res.json({"message": "Dish updated successfully", "dish": dish});
-}
+// Update a dish by ID
+const updateDish = async (req, res) => {
+    try {
+        const dish = await Dishes.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate('counter');
+        if (!dish) {
+            return res.status(404).json({ message: 'Dish not found' });
+        }
+        res.json({ "message": "Dish updated successfully", "dish": dish });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error updating dish', error: err.message });
+    }
+};
 
-const deleteDish = async (req,res) => {
-    const dish = await Dishes.findByIdAndDelete(req.params.id);
-    res.json({"message": "Dish deleted successfully", "dish": dish});   
-}
+// Delete a dish by ID
+const deleteDish = async (req, res) => {
+    try {
+        const dish = await Dishes.findByIdAndDelete(req.params.id);
+        if (!dish) {
+            return res.status(404).json({ message: 'Dish not found' });
+        }
+        res.json({ "message": "Dish deleted successfully", "dish": dish });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error deleting dish', error: err.message });
+    }
+};
 
+// Get dishes by counter ID
+const getDishByCounterID = async (req, res) => {
+    // console.log(req.params);
+    const { counterID } = req.params;
+    // console.log(counterID);
 
-module.exports = {getDishes,addNewDish,getDishById,updateDish,deleteDish};
+    try {
+        // Find dishes that match the counterId
+        const dishes = await Dishes.find({ counter: counterID }).populate('counter');
+
+        if (dishes.length === 0) {
+            return res.status(404).json({ message: 'No dishes found for this counter.' });
+        }
+
+        res.json({ "dishes": dishes });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error fetching dishes by counter', error: err.message });
+    }
+};
+
+module.exports = { getDishes, addNewDish, getDishById, updateDish, deleteDish, getDishByCounterID };
