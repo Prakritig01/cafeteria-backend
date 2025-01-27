@@ -44,4 +44,8 @@ const deleteUser = async(req,res) => {
     res.json({ "message" : "User deleted successfully", "user" : user});
 }
 
+const deleteItemFromCart = async(req,res) => {
+    
+}
+
 module.exports = {getAllUsers,addUser,getUserById,updateUser,deleteUser};

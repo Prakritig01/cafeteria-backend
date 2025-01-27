@@ -41,7 +41,7 @@ const getDishById = async (req, res) => {
 // Update a dish by ID
 const updateDish = async (req, res) => {
     try {
-        const dish = await Dishes.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate('counter');
+        const dish = await Dishes.findByIdAndUpdate(req.params.id, req.body, { new: true ,runValidators:true}).populate('counter');
         if (!dish) {
             return res.status(404).json({ message: 'Dish not found' });
         }

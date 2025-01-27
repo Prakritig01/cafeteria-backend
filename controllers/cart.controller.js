@@ -4,7 +4,7 @@ const Dish = require('./../models/dish.model');
 const getCartItems = async (req, res) => {
   try {
     await req.user.populate('cart.dish')
-    const cart = req.user.cart;
+    const cart = req.user.cart.filter(item => item.dish !== null);
     res.json({ cart: cart, user : req.user });
   } catch (error) {
     res.status(500).json({ msg: error });
@@ -14,6 +14,7 @@ const getCartItems = async (req, res) => {
 const addDish = async (req, res) => {
   try {
     const { dish } = req.body; // Extract the dish object from the request body.
+    console.log('dish from body',dish);
 
     // Validate if dish ID is present.
     if (!dish || !dish._id) {
@@ -22,6 +23,7 @@ const addDish = async (req, res) => {
 
     // Check if the dish exists in the database.
     const existingDish = await Dish.findById(dish._id); // Corrected method name (`findById`).
+    console.log('existingDish',existingDish);
     if (!existingDish) {
       return res
         .status(404)
@@ -72,34 +74,72 @@ const addDish = async (req, res) => {
 };
 
 
-const updateDishInCart = async (req, res) => {
+const updateItemQuantityInCart = async (req, res) => {
   try {
-    const dishItem = req.user.cart.find(
-      (item) => item.dish._id.toString() === req.params.dishId
+    // Find the item in the cart
+   
+    const itemInCart = req.user.cart.find(
+      (item) => item.dish._id.toString() === req.params.id
     );
-    const changedQuantity = req.body.changedQuantity || 0;
 
-    if (!dishItem) {
+    // console.log('itemInCart',itemInCart);
+    if (!itemInCart) {
       return res
         .status(404)
-        .json({ msg: `Dish with id ${req.params.dishId} not found in cart` });
+        .json({ msg: `Item with id ${req.params.id} not found in cart` });
     }
 
-    dishItem.quantity += changedQuantity;
+    const changedQuantity = Number(req.body.increment) || 0;
+    // console.log('changedQuantity',changedQuantity);
 
-    const cart = req.user.cart;
+    // Ensure the increment is a valid number
+    if (isNaN(changedQuantity)) {
+      return res.status(400).json({ msg: "Invalid increment value" });
+    }
+
+    // Ensure the quantity doesn't go negative
+    if (itemInCart.quantity + changedQuantity < 0) {
+      return res.status(400).json({
+        msg: "Quantity cannot be less than 0",
+      });
+    }
+
+    // remove item if quantity is 0
+    if (itemInCart.quantity + changedQuantity === 0) {
+      req.user.cart = req.user.cart.filter(
+        (item) => item.dish._id.toString() !== req.params.id
+      );
+      await req.user.save();
+      await req.user.populate('cart.dish')
+      return res.json({ msg: "Dish removed from cart", cart: req.user.cart });
+    }
+
+    // Update the quantity
+    itemInCart.quantity += changedQuantity;
+
+    // Save the updated user data and populate cart
     await req.user.save();
+    await req.user.populate('cart.dish')
 
-    res.json({ "Dish updated successfully": cart });
+    res.json({ msg: "Dish quantity updated successfully", cart: req.user.cart });
   } catch (error) {
-    res.status(500).json({ msg: error.message });
+    res.status(500).json({ msg: error.message || "An error occurred" });
   }
 };
 
 const deleteDishFromCart = async (req, res) => {
   try {
+    // console.log('req.params.id',req.params.id);
+    const dishExists = req.user.cart.some(
+      (item) => item.dish._id.toString() === req.params.id
+    );
+
+    if (!dishExists) {
+      return res.status(404).json({ msg: "Dish not found in the cart" });
+    }
+
     const updatedCart = req.user.cart.filter(
-      (item) => item.dish._id.toString() !== req.params.dishId
+      (item) => item.dish._id.toString() !== req.params.id
     );
 
     req.user.cart = updatedCart;
@@ -107,7 +147,7 @@ const deleteDishFromCart = async (req, res) => {
 
     res
       .status(200)
-      .json({ message: "Dish deleted successfully", cart: req.user.cart });
+      .json({ message: "Dish deleted from cart successfully", cart: req.user.cart });
   } catch (error) {
     res.status(500).json({ msg: error.message });
   }
@@ -128,5 +168,5 @@ module.exports = {
   addDish,
   deleteDishFromCart,
   clearCart,
-  updateDishInCart,
+  updateItemQuantityInCart
 };

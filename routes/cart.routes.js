@@ -10,7 +10,7 @@ router.get('/',cartController.getCartItems);
 
 router.post('/',cartController.addDish);
 
-router.patch('/:id',cartController.updateDishInCart);
+router.patch('/:id',cartController.updateItemQuantityInCart);
 
 router.delete('/:id',cartController.deleteDishFromCart);
 
