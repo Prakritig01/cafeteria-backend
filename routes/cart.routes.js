@@ -17,7 +17,7 @@ router.delete('/:id',cartController.deleteDishFromCart);
 router.delete('/',cartController.clearCart);
 
 async function auth(req,res,next) {
-    const id = '67937c215a4c791bf46cdd89'
+    const id = '67938080be563f3ed9b1b9e8'
     req.user = await User.findById(id);
     next();
 }

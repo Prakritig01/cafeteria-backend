@@ -13,4 +13,6 @@ router.patch('/:id',counterController.updateCounterById);
 
 router.delete('/:id',counterController.deleteCounterById);
 
+router.get('/merchant/:merchantID',counterController.getCounterByMerchantId);
+
 module.exports = router;

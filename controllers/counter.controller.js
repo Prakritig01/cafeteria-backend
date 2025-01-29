@@ -26,6 +26,20 @@ const deleteCounterById = async (req,res) => {
     res.json({"message":"Counter deleted successfully","counter":counter});
 }
 
+const getCounterByMerchantId = async (req,res) => {
+    const {merchantID} = req.params;
+    // console.log("merchnatID",merchantID);
+    try{
+        const counter = await Counter.find({merchant : merchantID});
+
+        res.json({"counter":counter});
+    }
+    catch(err){
+        console.error(err);
+        res.status(500).json({message:'Error fetching counter',error:err.message});
+    }
+};
 
 
-module.exports = {getAllcounters,addNewCounter,getCounterById,updateCounterById,deleteCounterById};
+
+module.exports = {getAllcounters,addNewCounter,getCounterById,updateCounterById,deleteCounterById,getCounterByMerchantId};

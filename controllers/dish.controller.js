@@ -17,6 +17,7 @@ const addNewDish = async (req, res) => {
     try {
         const dish = new Dishes(req.body);
         await dish.save();
+        console.log("dish", dish);
         res.json({ "message": "Dish added successfully", "dish": dish });
     } catch (err) {
         console.error(err);
@@ -76,10 +77,9 @@ const getDishByCounterID = async (req, res) => {
         // Find dishes that match the counterId
         const dishes = await Dishes.find({ counter: counterID }).populate('counter');
 
-        if (dishes.length === 0) {
-            return res.status(404).json({ message: 'No dishes found for this counter.' });
-        }
+        // console.log("dishes", dishes);
 
+        
         res.json({ "dishes": dishes });
     } catch (err) {
         console.error(err);
