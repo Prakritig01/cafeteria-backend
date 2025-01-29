@@ -1,9 +1,22 @@
 const User = require('./../models/user.model');
 
-const getAllUsers = async(req,res)=>{
-    const users = await User.find().select('-cart');
-    res.json({ "users" : users});
+const getAllUsers = async (req, res) => {
+    try {
+        const { role } = req.query; // Extract role from query parameters
+        let query = {}; 
+
+        if (role) {
+            query.role = role; // Apply role filter only if provided
+        }
+
+        const users = await User.find(query).select('-cart');
+        res.json({ users });
+    } catch (error) {
+        console.error("Error fetching users:", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
 };
+
 
 const addUser = async(req,res)=>{
     const user = await User.create(req.body);

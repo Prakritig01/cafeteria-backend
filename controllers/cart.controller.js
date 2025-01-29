@@ -23,7 +23,7 @@ const addDish = async (req, res) => {
 
     // Check if the dish exists in the database.
     const existingDish = await Dish.findById(dish._id); // Corrected method name (`findById`).
-    console.log('existingDish',existingDish);
+    // console.log('existingDish',existingDish);
     if (!existingDish) {
       return res
         .status(404)
