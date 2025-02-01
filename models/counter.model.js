@@ -5,14 +5,21 @@ const counterSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    merchant :[
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User',
-            required: true
-        }
-    ]
-})
+    description: {
+        type: String,
+        default: ''
+    },
+    image: {
+        type: String,
+        default: ''
+    },
+    merchant: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    }],
+    
+});
 
 const Counter = mongoose.model('Counter', counterSchema);
 
