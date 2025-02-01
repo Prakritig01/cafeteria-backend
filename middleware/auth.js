@@ -4,7 +4,7 @@ require("dotenv").config();
 function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
-  console.log("token", token);
+  // console.log("token", token);
   if (!token) {
     return res.status(404).json({ message: "You need to login !" });
   }

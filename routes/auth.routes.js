@@ -74,6 +74,7 @@ router.post("/login", async (req, res) => {
     username: user.username,
     email: user.email,
     role: user.role,
+    cart : user.cart
   };
   const token_data = { user: userInfo };
   const refresh_token = jwt.sign(token_data, process.env.REFRESH_TOKEN_SECRET, {
