@@ -125,7 +125,7 @@ router.delete("/logout", async (req, res) => {
 router.get("/user", (req, res) => {
   const authHeader = req.headers["authorization"];
   const refreshToken = authHeader && authHeader.split(" ")[1];
-  console.log(refreshToken);
+  // console.log(refreshToken);
   // console.log("sessions", sessions);
   if (!refreshToken) return res.status(401).json({ message: "Unauthorized" });
   if (!sessions.has(refreshToken))
