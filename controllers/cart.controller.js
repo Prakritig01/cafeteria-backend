@@ -3,9 +3,10 @@ const Dish = require('./../models/dish.model');
 
 const getCartItems = async (req, res) => {
   try {
+    // console.log('req.user in fetch cart',req.user);
     await req.user.populate('cart.dish')
     const cart = req.user.cart.filter(item => item.dish !== null);
-    res.json({ cart: cart, user : req.user });
+    res.json({ cart: cart});
   } catch (error) {
     res.status(500).json({ msg: error });
   }
@@ -14,7 +15,7 @@ const getCartItems = async (req, res) => {
 const addDish = async (req, res) => {
   try {
     const { dish } = req.body; // Extract the dish object from the request body.
-    console.log('dish from body',dish);
+    // console.log('dish from body',dish);
 
     // Validate if dish ID is present.
     if (!dish || !dish._id) {

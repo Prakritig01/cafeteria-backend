@@ -38,12 +38,15 @@ const getUserById = async (req, res) => {
     }
 }
 
+
+
 const updateUser = async (req, res) => {
     try {
         const { id } = req.params;
-        const { role } = req.body; // Extract role from request body
-        console.log("id",id);
-        console.log("role",role);
+        const { role, password } = req.body; // Extract role and password from the request body
+
+        // console.log("id from update user", id);
+        // console.log("role", role);
 
         // Find the user by ID
         const user = await User.findById(id);
@@ -51,7 +54,7 @@ const updateUser = async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-         console.log("user",user);
+        console.log("user", user);
 
         // Check if the role is being changed from 'merchant' to something else
         if (user.role === "merchant" && role !== "merchant") {
@@ -71,7 +74,7 @@ const updateUser = async (req, res) => {
         // Proceed with updating the user
         const updatedUser = await User.findByIdAndUpdate(id, req.body, {
             new: true,
-            runValidators: true
+            runValidators: true,
         });
 
         res.json({ message: "User updated successfully", user: updatedUser });
@@ -80,6 +83,7 @@ const updateUser = async (req, res) => {
         res.status(400).json({ message: "Error updating user", error });
     }
 };
+
 
 
 const deleteUser = async(req,res) => {
@@ -91,4 +95,7 @@ const deleteItemFromCart = async(req,res) => {
     
 }
 
-module.exports = {getAllUsers,addUser,getUserById,updateUser,deleteUser};
+
+module.exports = { getAllUsers, addUser, getUserById, updateUser, deleteUser };
+
+

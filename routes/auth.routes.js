@@ -51,9 +51,12 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   const { password, email } = req.body;
 
+  // console.log("email", email);
+  // console.log("password", password);
+
   // Find user by username
   const user = await Users.findOne({ email: email });
-  // console.log("user", user);
+  // console.log("user in db", user);
 
   if (!user) {
     return res.status(401).json({ message: "Incorrect username!" });
@@ -71,11 +74,12 @@ router.post("/login", async (req, res) => {
 
   const userInfo = {
     id : user._id,
-    username: user.username,
+    username: user.name,
     email: user.email,
     role: user.role,
     cart : user.cart
   };
+  // console.log("userInfo", userInfo);
   const token_data = { user: userInfo };
   const refresh_token = jwt.sign(token_data, process.env.REFRESH_TOKEN_SECRET, {
     expiresIn: "24h", // Expiry set to 24 hours
@@ -111,9 +115,6 @@ router.post("/token", async (req, res) => {
 router.delete("/logout", async (req, res) => {
   const authHeader = req.headers["authorization"];
   const refresh_token = authHeader && authHeader.split(" ")[1];
-  // const refresh_token = req.body.token;
-  // console.log("refresh_token in logout", refresh_token);
-  // console.log("sessions", sessions);
   if (!sessions.has(refresh_token))
     return res.status(200).json({ message: "No op" });
   sessions.delete(refresh_token);
@@ -121,13 +122,14 @@ router.delete("/logout", async (req, res) => {
   return res.json({ message: "Logged out!" });
 });
 
-router.post("/user", (req, res) => {
-  const refreshToken = req.body.token;
-  // console.log(refreshToken);
+router.get("/user", (req, res) => {
+  const authHeader = req.headers["authorization"];
+  const refreshToken = authHeader && authHeader.split(" ")[1];
+  console.log(refreshToken);
+  // console.log("sessions", sessions);
   if (!refreshToken) return res.status(401).json({ message: "Unauthorized" });
   if (!sessions.has(refreshToken))
     return res.status(403).json({ message: "Forbidden" });
-
   jwt.verify(
     refreshToken,
     process.env.REFRESH_TOKEN_SECRET,
