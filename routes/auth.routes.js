@@ -73,9 +73,9 @@ router.post("/login", async (req, res) => {
 
   const userInfo = {
     id: user._id,
-    // username: user.name,
-    // email: user.email,
-    // role: user.role,
+    username: user.name,
+    email: user.email,
+    role: user.role,
     // cart: user.cart, // Now cart contains full dish details instead of just IDs
   };
 

@@ -3,8 +3,14 @@ const router = express.Router();
 const User = require('./../models/user.model');
 
 const cartController = require('./../controllers/cart.controller');
+const { checkRole } = require('../middleware/permissions');
+const { ROLE } = require('../constants');
+
+
 
 router.get('/',cartController.getCartItems);
+
+router.use(checkRole(ROLE.Customer));
 
 router.post('/',cartController.addDishToCart);
 
