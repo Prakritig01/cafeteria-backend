@@ -51,19 +51,18 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   const { password, email } = req.body;
 
-  // console.log("email", email);
-  // console.log("password", password);
-
-  // Find user by username
-  const user = await Users.findOne({ email: email });
-  // console.log("user in db", user);
+  // Find user and populate cart items
+  const user = await Users.findOne({ email: email }).populate({
+    path: "cart.dish", // Populates dish field inside cart
+    model: "Dish",
+  });
 
   if (!user) {
     return res.status(401).json({ message: "Incorrect username!" });
   }
 
   try {
-    // Safely check the password
+    // Check the password safely
     const isMatched = await bcrypt.compare(password, user.password);
     if (!isMatched) {
       return res.status(400).json({ message: "Incorrect password!" });
@@ -73,25 +72,23 @@ router.post("/login", async (req, res) => {
   }
 
   const userInfo = {
-    id : user._id,
-    username: user.name,
-    email: user.email,
-    role: user.role,
-    cart : user.cart
+    id: user._id,
+    // username: user.name,
+    // email: user.email,
+    // role: user.role,
+    // cart: user.cart, // Now cart contains full dish details instead of just IDs
   };
-  // console.log("userInfo", userInfo);
+
   const token_data = { user: userInfo };
   const refresh_token = jwt.sign(token_data, process.env.REFRESH_TOKEN_SECRET, {
     expiresIn: "24h", // Expiry set to 24 hours
   });
 
   sessions.add(refresh_token);
-  // console.log("sessions", sessions);
 
-  // const token = generateToken(token_data);
   return res.json({ refresh_token, user: userInfo });
-  // return res.json({ message: "Logged in successfully!" });
 });
+
 
 router.post("/token", async (req, res) => {
   const refresh_token = req.body.token;
