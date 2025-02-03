@@ -17,13 +17,16 @@ const dishRoutes = require("./routes/dish.routes");
 app.use(cors());
 app.use(express.json());
 
-app.use("/auth", authRoutes);
-// Protected routes (authentication required)
-app.use(authenticateToken); // Apply authentication middleware here for protected routes
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
+
+app.use("/auth", authRoutes);
+// Protected routes (authentication required)
+app.use(authenticateToken); // Apply authentication middleware here for protected routes
+
+
 
 // Protected routes
 app.use("/users", userRoutes);
